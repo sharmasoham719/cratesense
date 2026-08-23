@@ -42,11 +42,48 @@ function emptyNodeStatuses(): Record<string, NodeStatus> {
   return Object.fromEntries(PIPELINE_NODES.map((n) => [n, "pending" as NodeStatus]));
 }
 
+export interface StreamLogEntry {
+  id: number;
+  time: string;
+  message: string;
+  tone: "neutral" | "amber" | "red";
+}
+
+const MAX_LOG_ENTRIES = 30;
+
+function describeEvent(data: JobStreamEvent): { message: string; tone: StreamLogEntry["tone"] } | null {
+  switch (data.event) {
+    case "batch_started":
+      return { message: `Batch ${data.batch_id ?? ""} started.`, tone: "neutral" };
+    case "node_transition":
+      if (data.status === "entered" || data.status === "retrying") {
+        return {
+          message: `${data.row_id} entered ${data.node}${data.status === "retrying" ? " (retrying)" : ""}.`,
+          tone: data.status === "retrying" ? "amber" : "neutral",
+        };
+      }
+      return null;
+    case "row_completed":
+      return {
+        message: `${data.row_id} completed${data.marker ? ` — ${data.marker}` : ""}.`,
+        tone: data.marker === "red" ? "red" : data.marker === "amber" ? "amber" : "neutral",
+      };
+    case "batch_completed":
+      return { message: `Batch ${data.batch_id ?? ""} completed.`, tone: "neutral" };
+    case "batch_failed":
+      return { message: `Batch ${data.batch_id ?? ""} failed${data.error ? `: ${data.error}` : ""}.`, tone: "red" };
+    default:
+      return null;
+  }
+}
+
 interface UseJobStreamResult {
   rows: Map<string, RowProgress>;
   isComplete: boolean;
   isFailed: boolean;
   isConnected: boolean;
+  log: StreamLogEntry[];
+  anomalyCount: number;
 }
 
 // SsePipelineFeed per knowledge-base/UI_COMPONENT_LIBRARY.md §3: wraps
@@ -60,7 +97,10 @@ export function useJobStream(jobId: string | null, idToken?: string): UseJobStre
   const [isComplete, setIsComplete] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [log, setLog] = useState<StreamLogEntry[]>([]);
+  const [anomalyCount, setAnomalyCount] = useState(0);
   const sourceRef = useRef<EventSource | null>(null);
+  const logIdRef = useRef(0);
 
   useEffect(() => {
     if (!jobId) return;
@@ -68,6 +108,9 @@ export function useJobStream(jobId: string | null, idToken?: string): UseJobStre
     setRows(new Map());
     setIsComplete(false);
     setIsFailed(false);
+    setLog([]);
+    setAnomalyCount(0);
+    logIdRef.current = 0;
 
     // EventSource can't set custom headers, so a real (non-DEV_OVERRIDE)
     // session's token is forwarded as a query param instead
@@ -86,6 +129,21 @@ export function useJobStream(jobId: string | null, idToken?: string): UseJobStre
 
     function handleMessage(e: MessageEvent) {
       const data: JobStreamEvent = JSON.parse(e.data);
+
+      const described = describeEvent(data);
+      if (described) {
+        logIdRef.current += 1;
+        const entry: StreamLogEntry = {
+          id: logIdRef.current,
+          time: new Date().toLocaleTimeString([], { hour12: false }),
+          message: described.message,
+          tone: described.tone,
+        };
+        setLog((prev) => [entry, ...prev].slice(0, MAX_LOG_ENTRIES));
+        if (data.event === "row_completed" && (data.marker === "amber" || data.marker === "red")) {
+          setAnomalyCount((n) => n + 1);
+        }
+      }
 
       if (data.event === "job_completed") {
         setIsComplete(true);
@@ -125,5 +183,5 @@ export function useJobStream(jobId: string | null, idToken?: string): UseJobStre
     };
   }, [jobId, idToken]);
 
-  return { rows, isComplete, isFailed, isConnected };
+  return { rows, isComplete, isFailed, isConnected, log, anomalyCount };
 }

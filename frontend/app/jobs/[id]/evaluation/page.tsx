@@ -1,7 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { Download } from "lucide-react";
+import { useMemo } from "react";
+import { Check, Download, X } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -14,6 +15,7 @@ import { StatTile } from "@/components/stat-tile";
 import { API_URL } from "@/lib/api";
 import { useAuthedUrl } from "@/lib/auth";
 import { useEvaluation } from "@/lib/evaluation";
+import { cn } from "@/lib/utils";
 
 const complianceChartConfig = {
   value: { label: "Compliance", color: "var(--chart-1)" },
@@ -37,6 +39,24 @@ export default function JobEvaluationPage() {
   const params = useParams<{ id: string }>();
   const { data: evaluation, isLoading, isError } = useEvaluation(params.id);
   const exportUrl = useAuthedUrl(`${API_URL}/jobs/${params.id}/export`);
+
+  // Gap-detection breakdown, per the Stitch "Evaluation Dashboard"
+  // reference: which fields most often miss ground truth. Grouped from
+  // the same fieldAccuracyDetails already fetched, not a fabricated
+  // "reason" taxonomy the backend doesn't produce.
+  const gapBreakdown = useMemo(() => {
+    if (!evaluation) return [];
+    const mismatches = evaluation.fieldAccuracyDetails.filter((d) => !d.matched);
+    if (mismatches.length === 0) return [];
+    const counts = new Map<string, number>();
+    for (const d of mismatches) {
+      counts.set(d.fieldName, (counts.get(d.fieldName) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .map(([fieldName, count]) => ({ fieldName, count, pct: Math.round((count / mismatches.length) * 100) }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 6);
+  }, [evaluation]);
 
   return (
     <div className="space-y-6">
@@ -116,6 +136,30 @@ export default function JobEvaluationPage() {
             </ChartContainer>
           )}
 
+          {gapBreakdown.length > 0 && (
+            <div className="bg-card rounded-xl p-5 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-sm font-medium">Gap Detection: Failure Reasons</h3>
+                <span className="bg-marker-amber/10 text-marker-amber border-marker-amber/20 rounded border px-2 py-0.5 text-xs">
+                  Needs attention
+                </span>
+              </div>
+              <div className="space-y-3">
+                {gapBreakdown.map((g) => (
+                  <div key={g.fieldName}>
+                    <div className="mb-1 flex justify-between font-mono text-xs">
+                      <span className="text-muted-foreground">{g.fieldName}</span>
+                      <span className="text-marker-amber">{g.pct}%</span>
+                    </div>
+                    <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
+                      <div className="bg-marker-amber h-full rounded-full" style={{ width: `${g.pct}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {evaluation.unscoredRowIds.length > 0 && (
             <Alert>
               <AlertTitle>
@@ -163,10 +207,22 @@ export default function JobEvaluationPage() {
                       <TableRow key={`${d.rowId}:${d.fieldName}:${i}`}>
                         <TableCell className="font-mono text-xs">{d.rowId}</TableCell>
                         <TableCell>{d.fieldName}</TableCell>
-                        <TableCell className="text-muted-foreground">{d.expected}</TableCell>
-                        <TableCell className="text-muted-foreground">{d.actual ?? "—"}</TableCell>
+                        <TableCell className={cn("font-mono text-xs", !d.matched && "text-muted-foreground/60 line-through")}>
+                          {d.expected}
+                        </TableCell>
+                        <TableCell
+                          className={cn("font-mono text-xs", d.matched ? "text-marker-green" : "text-marker-red")}
+                        >
+                          {d.actual ?? "—"}
+                        </TableCell>
                         <TableCell>
-                          <span className={d.matched ? "text-marker-green" : "text-marker-red"}>
+                          <span
+                            className={cn(
+                              "inline-flex items-center gap-1",
+                              d.matched ? "text-marker-green" : "text-marker-red"
+                            )}
+                          >
+                            {d.matched ? <Check className="size-3.5" /> : <X className="size-3.5" />}
                             {d.matched ? "Match" : "Mismatch"}
                           </span>
                         </TableCell>

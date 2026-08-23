@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { AggregateFlowRail } from "@/components/aggregate-flow-rail";
 import { JobProgressCard } from "@/components/job-progress-card";
 import { JobReviewTable } from "@/components/job-review-table";
+import { JobTelemetryPanel } from "@/components/job-telemetry-panel";
 import { PageHeader } from "@/components/page-header";
 import { API_URL } from "@/lib/api";
 import { useApiToken, useAuthedUrl } from "@/lib/auth";
@@ -23,7 +24,7 @@ export default function JobDetailPage() {
   const params = useParams<{ id: string }>();
   const { data: job, refetch } = useJob(params.id, { refetchInterval: 2000 });
   const apiToken = useApiToken();
-  const { rows, isComplete, isFailed, isConnected } = useJobStream(params.id, apiToken);
+  const { rows, isComplete, isFailed, isConnected, log, anomalyCount } = useJobStream(params.id, apiToken);
   const { data: jobRows, isLoading: jobRowsLoading } = useJobRows(
     job?.status === "completed" ? params.id : null
   );
@@ -91,6 +92,13 @@ export default function JobDetailPage() {
             </>
           )
         }
+      />
+
+      <JobTelemetryPanel
+        rows={rows}
+        log={log}
+        anomalyCount={anomalyCount}
+        totalRowCount={job?.rowCount ?? rowList.length}
       />
 
       <AggregateFlowRail rows={rows} />
