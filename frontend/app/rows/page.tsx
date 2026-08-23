@@ -9,6 +9,7 @@ import { DataTable } from "@/components/data-table";
 import { FilterBar } from "@/components/filter-bar";
 import { PageHeader } from "@/components/page-header";
 import { cn } from "@/lib/utils";
+import { useJobs } from "@/lib/jobs";
 import { useRows } from "@/lib/rows";
 import { buildColumns } from "./columns";
 
@@ -59,9 +60,41 @@ export default function RowsPage() {
     router.push("/jobs/new");
   };
 
+  const { data: jobs } = useJobs({ refetchInterval: 3000 });
+  const runningJob = jobs?.find((j) => j.status === "running");
+
   return (
     <div className="space-y-6">
-      <PageHeader title="Rows" subtitle={`Browse the Sample Dataset Input (${total.toLocaleString()} rows).`} />
+      <div className="flex items-start justify-between gap-4">
+        <PageHeader title="Rows" subtitle={`Browse the Sample Dataset Input (${total.toLocaleString()} rows).`} />
+
+        {/* System-status glass panel, per the Stitch "Data Ingestion Hub"
+            reference -- shows the same signal as the topbar's job badge,
+            restated here since this is the page reviewers spend the most
+            time on. Never fabricates worker counts the backend doesn't
+            track. */}
+        <div className="bg-popover/60 flex shrink-0 items-center gap-3 rounded-lg border px-4 py-2 backdrop-blur-sm">
+          <span className="relative flex size-2">
+            {runningJob && (
+              <span className="bg-primary motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" />
+            )}
+            <span className={cn("relative inline-flex size-2 rounded-full", runningJob ? "bg-primary" : "bg-muted-foreground/40")} />
+          </span>
+          <div className="flex flex-col leading-tight">
+            <span className="text-muted-foreground font-mono text-[10px] tracking-wider uppercase">System Status</span>
+            <span className="text-sm">
+              {runningJob ? (
+                <>
+                  <span className="text-primary font-semibold">{runningJob.rowCount}</span> row
+                  {runningJob.rowCount === 1 ? "" : "s"} enriching
+                </>
+              ) : (
+                "Idle"
+              )}
+            </span>
+          </div>
+        </div>
+      </div>
 
       <FilterBar
         value={search}
