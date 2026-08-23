@@ -1,0 +1,50 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports: ["8000:8000"]
+    environment:
+      - MOCK_LLM=${MOCK_LLM:-true}
+      - MOCK_LLM_LATENCY_SECONDS=${MOCK_LLM_LATENCY_SECONDS:-0}
+      - LLM_PROVIDER=${LLM_PROVIDER:-gemini}
+      - LLM_MODEL=${LLM_MODEL:-gemini-2.5-flash-lite}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - BATCH_SIZE=${BATCH_SIZE:-5}
+      - CONCURRENCY_WINDOW=${CONCURRENCY_WINDOW:-3}
+      - MAX_NODE_RETRIES=${MAX_NODE_RETRIES:-2}
+      - DATABASE_URL=sqlite:////data/db/cratesense.db
+      - MASTER_DATA_DIR=/data/master
+      - PROVIDED_DOCS_DIR=/data/provided-docs
+      - CORS_ORIGINS=http://localhost:3000
+      - DEV_OVERRIDE=${DEV_OVERRIDE:-false}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+    volumes:
+      - backend-data:/data/db
+      - ./knowledge-base/master-data:/data/master:ro
+      - ./knowledge-base/provided-docs:/data/provided-docs:ro
+  frontend:
+    build: ./frontend
+    ports: ["3000:3000"]
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - DEV_OVERRIDE=${DEV_OVERRIDE:-false}
+      - WATCHPACK_POLLING=true
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - AUTH_GOOGLE_ID=${GOOGLE_CLIENT_ID:-}
+      - AUTH_GOOGLE_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+      - frontend-next-cache:/app/.next
+    depends_on: [backend]
+
+volumes:
+  backend-data:
+  frontend-node-modules:
+  frontend-next-cache:

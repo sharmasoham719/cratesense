@@ -1,0 +1,4 @@
+# Shell scripts must always have LF line endings -- they run inside Linux
+# Docker containers (Render, local docker-compose), and a CRLF-corrupted
+# shebang line breaks the interpreter lookup.
+*.sh text eol=lf

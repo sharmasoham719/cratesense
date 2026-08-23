@@ -1,0 +1,176 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: var(--font-sans);
+    --font-sans: var(--font-sans);
+    --font-mono: var(--font-jetbrains-mono);
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --color-accent-subtle: var(--accent-subtle);
+    --color-marker-green: var(--marker-green);
+    --color-marker-amber: var(--marker-amber);
+    --color-marker-red: var(--marker-red);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+    --header-height: 3.5rem;
+    /* Cyber-Industrial theme, per deliverables Stitch reference
+       ("Next-Gen Web UI Redesign" / Titan-Core Industrial AI design
+       system) -- light mode kept close to shadcn defaults since the
+       reference design is dark-first; dark mode below carries the
+       actual brand palette. */
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.187 0.007 214.5);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.187 0.007 214.5);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.187 0.007 214.5);
+    --primary: oklch(0.55 0.16 149.3);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --accent-subtle: oklch(0.95 0.04 149.3);
+    --destructive: oklch(0.637 0.208 25.3);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.55 0.16 149.3);
+    --chart-2: oklch(0.65 0.14 149.3);
+    --chart-3: oklch(0.72 0.12 149.3);
+    --chart-4: oklch(0.8 0.09 149.3);
+    --chart-5: oklch(0.88 0.05 149.3);
+    --radius: 0.25rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.187 0.007 214.5);
+    --sidebar-primary: oklch(0.55 0.16 149.3);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.95 0.04 149.3);
+    --sidebar-accent-foreground: oklch(0.3 0.08 149.8);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+    --marker-green: oklch(0.723 0.192 149.6);
+    --marker-amber: oklch(0.769 0.165 70.1);
+    --marker-red: oklch(0.637 0.208 25.3);
+}
+
+.dark {
+    /* Base layer: surface-charcoal (#09090B), the deepest layer per the
+       design system's "Elevation & Depth" section. */
+    --background: oklch(0.141 0.004 285.8);
+    --foreground: oklch(0.914 0.004 236.5);
+    --card: oklch(0.241 0.006 236.8);
+    --card-foreground: oklch(0.914 0.004 236.5);
+    --popover: oklch(0.283 0.006 236.7);
+    --popover-foreground: oklch(0.914 0.004 236.5);
+    /* Electric emerald -- reserved for high-confidence data and primary
+       actions, per DESIGN.md "Primary (Emerald)". */
+    --primary: oklch(0.809 0.195 149.3);
+    --primary-foreground: oklch(0.301 0.083 149.8);
+    --secondary: oklch(0.283 0.006 236.7);
+    --secondary-foreground: oklch(0.914 0.004 236.5);
+    --muted: oklch(0.241 0.006 236.8);
+    --muted-foreground: oklch(0.653 0.029 143.5);
+    --accent: oklch(0.327 0.005 236.7);
+    --accent-foreground: oklch(0.914 0.004 236.5);
+    --destructive: oklch(0.637 0.208 25.3);
+    --border: oklch(0.372 0.039 257.3);
+    --input: oklch(0.372 0.039 257.3);
+    --ring: oklch(0.809 0.195 149.3);
+    --chart-1: oklch(0.809 0.195 149.3);
+    --chart-2: oklch(0.723 0.192 149.6);
+    --chart-3: oklch(0.63 0.15 149.3);
+    --chart-4: oklch(0.5 0.11 149.3);
+    --chart-5: oklch(0.38 0.07 149.3);
+    /* Sidebar uses surface-charcoal, distinct from the slightly lighter
+       body background, per DESIGN.md's fixed 280px sidebar spec. */
+    --sidebar: oklch(0.141 0.004 285.8);
+    --sidebar-foreground: oklch(0.914 0.004 236.5);
+    --sidebar-primary: oklch(0.809 0.195 149.3);
+    --sidebar-primary-foreground: oklch(0.301 0.083 149.8);
+    --sidebar-accent: oklch(0.283 0.006 236.7);
+    --sidebar-accent-foreground: oklch(0.809 0.195 149.3);
+    --sidebar-border: oklch(0.372 0.039 257.3);
+    --sidebar-ring: oklch(0.809 0.195 149.3);
+    --marker-green: oklch(0.723 0.192 149.6);
+    --marker-amber: oklch(0.769 0.165 70.1);
+    --marker-red: oklch(0.637 0.208 25.3);
+    /* Accent-subtle: emerald-tinted, used for table row hover and
+       badges -- explicit dark override so it never falls back to the
+       light near-white value. */
+    --accent-subtle: oklch(0.283 0.05 149.5);
+}
+
+@layer components {
+  /* Pipeline Flow Rail's one-shot node pulse-in, per
+     knowledge-base/FRONTEND_DESIGN_SYSTEM.md §6 -- fires once when a node
+     enters "active" state, never a looping decoration. */
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(0.9);
+      opacity: 0.6;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  .animate-pulse-ring {
+    animation: pulse-ring 150ms ease-out;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  html {
+    @apply font-sans;
+    }
+}

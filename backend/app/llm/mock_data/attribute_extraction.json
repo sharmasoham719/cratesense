@@ -1,0 +1,84 @@
+{
+  "_comment": "Keys are Mfg_Part_Num row ids. Covers the scenario range needed to smoke-test the confidence-marker/retry system (knowledge-base/BACKEND_COGNITIVE_FLOW.md §3, §5), not just the happy path.",
+
+  "PDSH4816AF": {
+    "row_id": "PDSH4816AF",
+    "attributes": [
+      {"label": "Series", "value": "Professional Series", "uom": null},
+      {"label": "Number of Wash Cycles", "value": "5", "uom": null},
+      {"label": "Voltage Rating", "value": "120", "uom": "V"},
+      {"label": "Amperage Rating", "value": "15", "uom": "A"},
+      {"label": "Mounting Type", "value": "Leg", "uom": null},
+      {"label": "Sound Level", "value": "47", "uom": "dBA"},
+      {"label": "Material", "value": "Stainless Steel", "uom": null}
+    ]
+  },
+  "WDTS7024RZ": {
+    "row_id": "WDTS7024RZ",
+    "attributes": [
+      {"label": "Series", "value": "Eco Series", "uom": null},
+      {"label": "Voltage Rating", "value": "120", "uom": "V"},
+      {"label": "Amperage Rating", "value": "10", "uom": "A"},
+      {"label": "Mounting Type", "value": "Built-in", "uom": null},
+      {"label": "Sound Level", "value": "41", "uom": "dBA"},
+      {"label": "Material", "value": "Stainless Steel", "uom": null},
+      {"label": "Color", "value": "Stainless Steel", "uom": null}
+    ]
+  },
+  "FCT-DEMO-001": {
+    "row_id": "FCT-DEMO-001",
+    "attributes": [
+      {"label": "Mount Type", "value": "Deck Mount", "uom": null},
+      {"label": "Number of Handles", "value": "1", "uom": null},
+      {"label": "Finish", "value": "Matte Black", "uom": null},
+      {"label": "Flow Rate", "value": "1.8", "uom": "gpm"}
+    ]
+  },
+
+  "ADB15516CS": {
+    "row_id": "ADB15516CS",
+    "attributes": [
+      {"label": "Series", "value": "Vintage", "uom": null},
+      {"label": "Board Width", "value": "1x6", "uom": null},
+      {"label": "Board Length", "value": "16'", "uom": null},
+      {"label": "Edge Type", "value": "Sq Edge", "uom": null},
+      {"label": "Material", "value": "PVC", "uom": null},
+      {"label": "Color", "value": "Coastline", "uom": null}
+    ]
+  },
+  "543140016": {
+    "row_id": "543140016",
+    "attributes": [
+      {"label": "Series", "value": "Transcend", "uom": null},
+      {"label": "Board Width", "value": "1x6", "uom": null},
+      {"label": "Board Length", "value": "16'", "uom": null},
+      {"label": "Edge Type", "value": "Sq Edge", "uom": null},
+      {"label": "Material", "value": "Composite", "uom": null},
+      {"label": "Color", "value": "Biscayne", "uom": null}
+    ]
+  },
+
+  "MOCK-AMBER-001": {
+    "row_id": "MOCK-AMBER-001",
+    "attributes": [
+      {"label": "Series", "value": "Professional Series", "uom": null},
+      {"label": "Voltage Rating", "value": "120", "uom": "V"},
+      {"label": "Mounting Type", "value": "Freestanding", "uom": null},
+      {"label": "Sound Level", "value": "loud-ish", "uom": "decibel-things"}
+    ]
+  },
+
+  "MOCK-RED-001": {
+    "row_id": "MOCK-RED-001",
+    "attributes": [
+      {"label": "Series", "value": "Made Up Series XYZ", "uom": null},
+      {"label": "Voltage Rating", "value": "one-twenty", "uom": "volts"},
+      {"label": "Mounting Type", "value": "Floating in Air", "uom": null}
+    ]
+  },
+
+  "MOCK-EMPTY-001": {
+    "row_id": "MOCK-EMPTY-001",
+    "attributes": []
+  }
+}
