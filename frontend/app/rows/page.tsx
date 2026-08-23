@@ -2,11 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import { FilterBar } from "@/components/filter-bar";
 import { PageHeader } from "@/components/page-header";
+import { cn } from "@/lib/utils";
 import { useRows } from "@/lib/rows";
 import { buildColumns } from "./columns";
 
@@ -70,17 +72,6 @@ export default function RowsPage() {
         placeholder="Search by description…"
       />
 
-      {selected.size > 0 && (
-        <div className="bg-muted flex items-center justify-between rounded-md border px-4 py-2">
-          <span className="text-sm">
-            {selected.size} row{selected.size === 1 ? "" : "s"} selected
-          </span>
-          <Button size="sm" onClick={handleRunEnrichment}>
-            Run enrichment on {selected.size} row{selected.size === 1 ? "" : "s"}
-          </Button>
-        </div>
-      )}
-
       {isError ? (
         <p className="text-destructive text-sm">Failed to load rows. Is the backend running?</p>
       ) : (
@@ -99,6 +90,36 @@ export default function RowsPage() {
             Next
           </Button>
         </div>
+      </div>
+
+      {/* Floating bulk-action bar, per the Stitch "Data Ingestion Hub"
+          reference: a glassmorphic panel fixed above the content rather
+          than an inline banner, so it stays reachable while scrolling a
+          long table. */}
+      <div
+        className={cn(
+          "fixed bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-4 rounded-xl border px-5 py-3",
+          "bg-popover/80 shadow-lg backdrop-blur-md transition-all duration-200",
+          selected.size > 0 ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
+        )}
+      >
+        <div className="flex items-center gap-2">
+          <span className="bg-primary/20 text-primary flex size-6 items-center justify-center rounded-full text-xs font-bold">
+            {selected.size}
+          </span>
+          <span className="text-sm">Row{selected.size === 1 ? "" : "s"} selected</span>
+        </div>
+        <div className="bg-border h-6 w-px" />
+        <Button size="sm" onClick={handleRunEnrichment}>
+          Start Enrichment
+        </Button>
+        <button
+          className="text-muted-foreground hover:text-foreground ml-1"
+          onClick={() => setSelected(new Set())}
+          aria-label="Clear selection"
+        >
+          <X className="size-4" />
+        </button>
       </div>
     </div>
   );
