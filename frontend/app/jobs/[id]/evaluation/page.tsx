@@ -78,17 +78,20 @@ export default function JobEvaluationPage() {
               label="Field-level accuracy"
               value={formatPercent(evaluation.fieldLevelAccuracy)}
               tone={toneForPercent(evaluation.fieldLevelAccuracy)}
+              progress={evaluation.fieldLevelAccuracy}
             />
             <StatTile
               label="Char-limit compliance"
               value={formatPercent(evaluation.charLimitCompliance)}
               tone={toneForPercent(evaluation.charLimitCompliance)}
+              progress={evaluation.charLimitCompliance}
             />
             <StatTile
               label="LOV compliance"
               hint="values from the approved list"
               value={formatPercent(evaluation.lovCompliance)}
               tone={toneForPercent(evaluation.lovCompliance)}
+              progress={evaluation.lovCompliance}
             />
           </div>
 

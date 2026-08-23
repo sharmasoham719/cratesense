@@ -17,6 +17,11 @@ interface StatTileProps {
   // `label` (e.g. LOV) -- shown as static text, not a hover tooltip, since
   // hover discovery is unreliable on a workfloor/touch device.
   hint?: string;
+  // 0-1 fill for the bento-style progress rail under the numeral, per
+  // the Stitch "Evaluation Dashboard" reference -- only rendered when
+  // the caller supplies a real ratio (e.g. the metric's own 0-1 value),
+  // never a decorative placeholder.
+  progress?: number | null;
 }
 
 const TONE_CLASS: Record<NonNullable<StatTileProps["tone"]>, string> = {
@@ -26,10 +31,27 @@ const TONE_CLASS: Record<NonNullable<StatTileProps["tone"]>, string> = {
   red: "text-marker-red",
 };
 
-export function StatTile({ label, value, tone = "neutral", icon: Icon, trend, hint }: StatTileProps) {
+const TONE_BAR_CLASS: Record<NonNullable<StatTileProps["tone"]>, string> = {
+  neutral: "bg-foreground",
+  green: "bg-marker-green shadow-[0_0_8px_var(--marker-green)]",
+  amber: "bg-marker-amber shadow-[0_0_8px_var(--marker-amber)]",
+  red: "bg-marker-red shadow-[0_0_8px_var(--marker-red)]",
+};
+
+export function StatTile({ label, value, tone = "neutral", icon: Icon, trend, hint, progress }: StatTileProps) {
   return (
-    <Card className="p-4">
-      <CardContent className="space-y-1 p-0">
+    <Card className="relative overflow-hidden p-4">
+      {tone !== "neutral" && (
+        <div
+          className={cn(
+            "pointer-events-none absolute -top-10 -right-10 size-32 rounded-full blur-2xl",
+            tone === "green" && "bg-marker-green/10",
+            tone === "amber" && "bg-marker-amber/10",
+            tone === "red" && "bg-marker-red/10"
+          )}
+        />
+      )}
+      <CardContent className="relative space-y-1 p-0">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-muted-foreground text-sm">{label}</p>
@@ -59,6 +81,14 @@ export function StatTile({ label, value, tone = "neutral", icon: Icon, trend, hi
             {trend.direction === "down" && <TrendingDown className="size-3" />}
             {trend.label}
           </p>
+        )}
+        {progress !== undefined && progress !== null && (
+          <div className="bg-muted mt-3 h-1.5 w-full overflow-hidden rounded-full">
+            <div
+              className={cn("h-full rounded-full transition-all duration-300", TONE_BAR_CLASS[tone])}
+              style={{ width: `${Math.round(Math.max(0, Math.min(1, progress)) * 100)}%` }}
+            />
+          </div>
         )}
       </CardContent>
     </Card>
