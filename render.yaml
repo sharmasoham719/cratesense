@@ -1,0 +1,69 @@
+# Render Blueprint spec for CrateSense
+# https://render.com/docs/blueprint-spec
+# Deploy: Render dashboard -> New -> Blueprint -> connect this repo.
+
+services:
+  - type: web
+    name: cratesense-backend
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: MOCK_LLM
+        value: "true"
+      - key: MOCK_LLM_LATENCY_SECONDS
+        value: "0"
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: LLM_MODEL
+        value: gemini-2.5-flash-lite
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: BATCH_SIZE
+        value: "5"
+      - key: CONCURRENCY_WINDOW
+        value: "3"
+      - key: MAX_NODE_RETRIES
+        value: "2"
+      - key: DATABASE_URL
+        value: "sqlite:////data/db/cratesense.db"
+      - key: MASTER_DATA_DIR
+        value: /data/master
+      - key: PROVIDED_DOCS_DIR
+        value: /data/provided-docs
+      - key: CORS_ORIGINS
+        value: https://cratesense-frontend.onrender.com
+      - key: DEV_OVERRIDE
+        value: "true"
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+
+  - type: web
+    name: cratesense-frontend
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: frontend/Dockerfile
+    dockerContext: frontend
+    envVars:
+      - key: DEV_OVERRIDE
+        value: "true"
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: AUTH_GOOGLE_ID
+        sync: false
+      - key: AUTH_GOOGLE_SECRET
+        sync: false
+      - key: NEXTAUTH_SECRET
+        sync: false
+      - key: NEXTAUTH_URL
+        value: https://cratesense-frontend.onrender.com
