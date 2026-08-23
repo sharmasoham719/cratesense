@@ -22,7 +22,7 @@ RUN chmod +x entrypoint.sh
 # this build output, it just also pays for an unused production build on
 # `docker compose build` (acceptable; correctness over local build speed
 # under deadline).
-ARG NEXT_PUBLIC_API_URL="https://cratesense-backend.onrender.com"
+ARG NEXT_PUBLIC_API_URL="https://cratesense-backend-mfoj.onrender.com"
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 RUN npm run build
 
