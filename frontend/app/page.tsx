@@ -65,6 +65,7 @@ export default function DashboardPage() {
             value={summary.greenPct === null ? "—" : `${summary.greenPct}%`}
             tone={summary.greenPct === null ? "neutral" : summary.greenPct >= 80 ? "green" : summary.greenPct >= 50 ? "amber" : "red"}
             icon={CircleCheck}
+            progress={summary.greenPct === null ? null : summary.greenPct / 100}
           />
           <StatTile
             label="Most recent"
